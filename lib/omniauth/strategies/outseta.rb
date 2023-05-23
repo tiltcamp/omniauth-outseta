@@ -41,7 +41,7 @@ module OmniAuth
           is_primary: raw_info[:"outseta:isPrimary"] == "1",
           subscription_uid: raw_info[:"outseta:subscriptionUid"],
           plan_uid: raw_info[:"outseta:planUid"],
-          addon_uids: raw_info[:"outseta:addonUids"]
+          addon_uids: raw_info[:"outseta:addOnUids"]
         }
       end
 

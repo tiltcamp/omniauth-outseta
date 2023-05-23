@@ -1,5 +1,12 @@
 ## [Unreleased]
 
+## [1.0.1](https://github.com/tiltcamp/omniauth-outseta/compare/v1.0.0...v1.0.1) (2023-05-23)
+
+
+### Bug Fixes
+
+* map `addon_uids` to the correct JSON attribute ([0474082](https://github.com/tiltcamp/omniauth-outseta/commit/0474082f6ee91554940612c88b51b5a0da68d2ee))
+
 ## 1.0.0 (2023-05-23)
 
 

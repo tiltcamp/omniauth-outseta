@@ -1,14 +1,13 @@
-name: Ruby
+name: CI
 
 on:
   push:
     branches:
       - main
-
   pull_request:
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
     name: Ruby ${{ matrix.ruby }}
     strategy:

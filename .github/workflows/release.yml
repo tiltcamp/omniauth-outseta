@@ -9,7 +9,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: GoogleCloudPlatform/release-please-action@v3
+      - uses: google-github-actions/release-please-action@v3
         id: release
         with:
           release-type: ruby
@@ -23,7 +23,7 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
       - run: bundle install
         if: ${{ steps.release.outputs.release_created }}
-      - name: publish gem
+      - name: Publish to RubyGems
         run: |
           mkdir -p $HOME/.gem
           touch $HOME/.gem/credentials
@@ -33,4 +33,12 @@ jobs:
           gem push *.gem
         env:
           GEM_HOST_API_KEY: "${{secrets.RUBYGEMS_AUTH_TOKEN}}"
+        if: ${{ steps.release.outputs.release_created }}
+      - name: Publish to GitHub Packages
+        run: |
+          printf -- "---\n:github: Bearer ${GITHUB_TOKEN}\n" > $HOME/.gem/credentials
+          export OWNER=$( echo ${{ github.repository }} | cut -d "/" -f 1 )
+          gem push --KEY github --host https://rubygems.pkg.github.com/${OWNER} *.gem
+        env:
+          GITHUB_TOKEN: "${{secrets.GITHUB_TOKEN}}"
         if: ${{ steps.release.outputs.release_created }}

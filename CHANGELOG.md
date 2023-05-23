@@ -1,5 +1,12 @@
 ## [Unreleased]
 
+## [1.0.2](https://github.com/tiltcamp/omniauth-outseta/compare/v1.0.1...v1.0.2) (2023-05-23)
+
+
+### Continuous Integration
+
+* also release to GitHub Packages ([0af230c](https://github.com/tiltcamp/omniauth-outseta/commit/0af230c42af8ec728a4dfe0284e454b93bb307a5))
+
 ## [1.0.1](https://github.com/tiltcamp/omniauth-outseta/compare/v1.0.0...v1.0.1) (2023-05-23)
 
 

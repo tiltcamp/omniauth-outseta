@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["hello@tiltcamp.com"]
 
   spec.summary = "Use Outseta with OmniAuth."
-  spec.description = "Enables the use of Outseta as an authentication provider in combination with Devise and/or Omniauth."
+  spec.description = "Enables the use of Outseta as an authentication provider in combination with Devise and/or OmniAuth."
   spec.homepage = "https://github.com/tiltcamp/omniauth-outseta"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.6"

@@ -1,9 +1,10 @@
 # Omniauth::Outseta
 
 This gem enables the use of [Outseta](https://www.outseta.com/) as an authentication provider in combination with the 
-[Devise](https://github.com/heartcombo/devise) and [Omniauth](https://github.com/omniauth/omniauth) gems.
+[Devise](https://github.com/heartcombo/devise) and [OmniAuth](https://github.com/omniauth/omniauth) gems. Outseta
+enables you to manage, authenticate, and charge your customers all in one place.
 
-## Installation
+## Installation (With Devise)
 
 ### Prerequisites
 
@@ -48,7 +49,13 @@ containing the public key used to validate the signature on Outseta JWTs.
 Add the necessary fields to your User model by generating a migration:
 
 ```bash
-$ rails generate migration AddFieldsToUser email:string outseta_uid:string name:string account_uid:string
+$ rails generate migration AddFieldsToUser email:string outseta_uid:string:index name:string account_uid:string
+```
+
+And add a unique constraint to the `outseta_uid` field in the newly generated migration:
+
+```ruby
+add_index :users, :outseta_uid, unique: true
 ```
 
 And then migrate the database:
@@ -87,11 +94,9 @@ module Users
       @user = User.from_outseta_omniauth(request.env["omniauth.auth"])
 
       if @user.persisted?
-        flash[:notice] = I18n.t "devise.omniauth_callbacks.success", kind: "Outseta"
         sign_in_and_redirect @user, event: :authentication
       else
-        session["devise.outseta_data"] = request.env["omniauth.auth"].except(:extra)
-        redirect_to new_user_registration_url
+        redirect_to user_outseta_omniauth_authorize_url
       end
     end
   end
@@ -108,6 +113,52 @@ Rails.application.routes.draw do
 end
 ```
 
+### Without [Database Authenticatable](https://www.rubydoc.info/github/heartcombo/devise/main/Devise/Models/DatabaseAuthenticatable)
+
+This may be obvious to those with a deep familiarity with Devise, but if you opt not to use Devise's 
+`database_authenticatable` module (as suggested above) you will not get the default `sessions` routes. This means that 
+you will need to create your own 'Sign in' and 'Sign out' pages and routes. You can do this without a new controller by
+just overriding the default Devise `sessions/new` view as follows.
+
+First, enable scoped views in your Devise configuration (`config/initializers/devise.rb`):
+
+```ruby
+  # ==> Scopes configuration
+  # Turn scoped views on. Before rendering "sessions/new", it will first check for
+  # "users/sessions/new". It's turned off by default because it's slower if you
+  # are using only default views.
+  config.scoped_views = true
+```
+
+Then, create a new file at `app/views/users/sessions/new.html.erb` with the following contents:
+
+```erb
+<%= button_to "Sign in with Outseta", user_outseta_omniauth_authorize_path %>
+```
+
+And then add the following `devise_scope :user` block to your `config/routes.rb` file:
+
+```ruby
+Rails.application.routes.draw do
+  devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
+  devise_scope :user do
+    authenticated do
+      delete 'sign_out', to: 'devise/sessions#destroy', as: :destroy_user_session
+    end
+
+    unauthenticated do
+      root to: 'devise/sessions#new', as: :unauthenticated_root
+    end
+  end
+end
+```
+
+You can then add a sign out button anywhere in your application with the following:
+
+```erb
+<%= link_to "Sign out", destroy_user_session_path, data: { "turbo-method": :delete } %>
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can 
@@ -118,7 +169,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. Rel
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/omniauth-outseta. This project is
+Bug reports and pull requests are welcome on GitHub at https://github.com/tiltcamp/omniauth-outseta. This project is
 intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the 
 [code of conduct](https://github.com/tiltcamp/omniauth-outseta/blob/master/CODE_OF_CONDUCT.md).
 

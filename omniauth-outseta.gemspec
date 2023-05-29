@@ -34,7 +34,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "jwt", "~> 2.7"
-  spec.add_dependency "omniauth", "~> 1.9.2"
+  spec.add_dependency "omniauth", ">= 1.9.2", "< 2.2.0"
   spec.add_dependency "openssl", "~> 3.1.0"
 
   # For more information and examples about making a new gem, check out our
